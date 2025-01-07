@@ -2,8 +2,8 @@
 
 # 环境变量定义
 readonly LOG_PATH="/home/ubuntu20/Workspace/Datasets/Multimodal/30s"  # 结果保存路径
-readonly HPC_PATH="/home/ubuntu20/Workspace/Datasets/Multimodal/30s/8Events"  # HPC结果保存路径
-readonly SNAPSHOT_PATH="/home/ubuntu20/Workspace/Datasets/Multimodal/30s/Snapshots"  # SNAPSHOT结果保存路径
+readonly HPC_PATH="/home/ubuntu20/Workspace/Datasets/Multimodal/30s/8Events"  # HPC结果保存路径 /home/ubuntu20/Workspace/Datasets/Multimodal/30s/8Events/B_1.txt && M_1.txt
+readonly SNAPSHOT_PATH="/home/ubuntu20/Workspace/Datasets/Multimodal/30s/Snapshots"  # SNAPSHOT结果保存路径 /home/ubuntu20/Workspace/Datasets/Multimodal/30s/Snapshots/B/B_1/ck1
 readonly ELF_PATH_CONTAINER="/Datasets/malwares/Valid_ELF_20200405"  # 容器内ELF文件路径
 readonly ELF_PATH_LOCAL="/home/ubuntu20/Workspace/Datasets/malwares/virus"  # 本地ELF文件路径
 readonly PURE_ELF_PATH="/home/ubuntu20/Workspace/Datasets/malwares/pure_Valid_ELF_20200405"  # 纯净ELF文件路径
@@ -125,7 +125,7 @@ run_ELF() {
         log_msg "已将ELF文件 ${file} 从 ${PURE_ELF_PATH} 复制到 ${ELF_PATH_LOCAL}"
         
         local hpc_result="${HPC_PATH}/M_${file_index}.txt"
-        local snapshot_result="${SNAPSHOT_PATH}/M_${file_index}"
+        local snapshot_result="${SNAPSHOT_PATH}/M/M_${file_index}"
         log_msg "开始运行恶意软件 ${file}. 结果保存路径:${hpc_result} && ${snapshot_result}"
         
         # 创建结果保存文件夹
@@ -153,7 +153,7 @@ run_benign() {
     # 遍历所有良性软件命令
     for file in "${benign_files[@]}"; do
         local hpc_result="${HPC_PATH}/B_${file_index}.txt"
-        local snapshot_result="${SNAPSHOT_PATH}/B_${file_index}"
+        local snapshot_result="${SNAPSHOT_PATH}/B/B_${file_index}"
         log_msg "开始运行良性软件 ${file}. 保存路径:${hpc_result} && ${snapshot_result}"
 
         # 创建结果保存文件夹
