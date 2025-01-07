@@ -40,7 +40,7 @@ delete_container() {
     log_msg "已删除容器 ${CONTAINER_NAME}"
 }
 
-# 在Docker容器中执行文件并收集性能计数器数据的核心函数
+# 在Docker容器中执行文件并收集性能计数器以及快照数据的核心函数
 get_data() {
     local hpc_result="$1"
     local snapshot_result="$2"
