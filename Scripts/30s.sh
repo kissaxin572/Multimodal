@@ -14,9 +14,14 @@ readonly CONTAINER_NAME="base"  # Docker容器名称
 # 定义需要收集的所有硬件性能计数器事件数组
 readonly EVENTS="branch-instructions,branch-misses,cache-misses,cpu-cycles,instructions,L1-dcache-loads,LLC-stores,iTLB-load-misses"
 
-# 日志输出函数,输出带时间戳的日志信息
+# 定义日志文件路径，可根据实际需求调整
+readonly LOG_FILE_PATH="$LOG_PATH/log.txt"
+
+# 日志输出函数,输出带时间戳的日志信息，同时写入日志文件
 log_msg() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_PATH/log.txt
+    local msg="$1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $msg"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $msg" >> "$LOG_FILE_PATH"  # 将日志信息追加到日志文件
 }
 
 # 文件索引计数器,用于生成唯一的输出文件名
@@ -81,6 +86,7 @@ get_data() {
     local perf_pid=$!  # 记录perf命令的进程ID
     # 等待perf命令执行完成,即等待数据收集结束
     wait "$perf_pid"
+    log_msg "hpc数据已保存到 ${hpc_result}"
 
     # 不暂停容器的情况下创建检查点
     if ! docker checkpoint create --leave-running=true "$CONTAINER_NAME" "ck1"; then
@@ -179,12 +185,11 @@ main() {
     echo 0 > /proc/sys/kernel/nmi_watchdog
 
     # 创建本地临时目录用于存放样本文件
-    mkdir -p "$ELF_PATH_LOCAL"
-    mkdir -p "$LOG_PATH"
+    mkdir -p "$ELF_PATH_LOCAL" # 恶意软件宿主机保存路径
+    mkdir -p "$LOG_PATH" # 日志保存路径
     mkdir -p "$HPC_PATH" # HPC结果保存路径
     mkdir -p "$SNAPSHOT_PATH" # SNAPSHOT结果保存路径
 
-    # 实验1: 10秒持续时间,不分段采样
     run_experiment
 }
 
