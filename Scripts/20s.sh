@@ -102,12 +102,11 @@ get_data() {
     cp_command="cp -r \"/var/lib/docker/containers/${container_id}/checkpoints/ck1\" \"${snapshot_result}/ck1\""
     eval "$cp_command"
     if [ $? -ne 0 ]; then
-        log_msg "警告: 无法复制检查点 ${checkpoint_prefix}${i} 到 ${output_dir}"
+        log_msg "警告: 无法复制检查点 ck1 到 ${snapshot_result}"
     fi
     
     ((file_index++))
 
-    
     # 清理:删除使用过的容器
     delete_container
 }
