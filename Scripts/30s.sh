@@ -78,7 +78,7 @@ get_data() {
     group_args=${group_args:1}  # 移除开头的逗号
 
     # 构建perf命令
-    perf_cmd="timeout --signal=SIGINT ${duration_time} perf stat -e $EVENTS -G $group_args -o $hpc_result"
+    perf_cmd="timeout --signal=SIGINT ${duration_time} perf stat -e $EVENTS -I 300 -G $group_args -o $hpc_result"
     log_msg "执行命令: $perf_cmd"
     eval "$perf_cmd &"  # 在后台执行perf命令,开始收集性能计数器数据
     log_msg "等待 ${duration_time}秒"

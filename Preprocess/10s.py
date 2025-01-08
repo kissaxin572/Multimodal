@@ -371,20 +371,27 @@ def process_img(base_folder, output_base_folder):
         # 先处理良性文件，使用 tqdm 显示进度条
         for benign_count, combined_file in enumerate(tqdm(benign_files, desc=f"处理良性文件 ({method_name})", unit="文件")):
             log_message(f"正在处理良性文件: {combined_file}")  # 增加提示
+            # 从combined_file路径中提取编号   
+            folder_name = os.path.basename(os.path.dirname(os.path.dirname(combined_file)))  # 获取B_1这样的文件夹名
+            number = folder_name.split('_')[1]  # 提取编号1，B-1->1.png，对齐数据
+            # input_file="Datasets/Original/10s/Snapshots/B/B_1/ck1/combined.img",output_file="Datasets/Processed/10s/SFC/Gray/B/1.png"
             if method_name in ["SFC_Gray", "SFC_Hilbert", "SFC_Zorder"]:
-                method_instance.process_file(input_file=combined_file, output_file=os.path.join(output_folders[method_name], "B", f"{benign_count + 1}.png"))
+                method_instance.process_file(input_file=combined_file, output_file=os.path.join(output_folders[method_name], "B", f"{number}.png"))
             else:
                 method_instance.process_file(combined_file)
-                method_instance.save_image(os.path.join(output_folders[method_name], "B", f"{benign_count + 1}.png"))
+                method_instance.save_image(os.path.join(output_folders[method_name], "B", f"{number}.png"))
 
         # 再处理恶意文件，使用 tqdm 显示进度条
         for malicious_count, combined_file in enumerate(tqdm(malicious_files, desc=f"处理恶意文件 ({method_name})", unit="文件")):
             log_message(f"正在处理恶意文件: {combined_file}")  # 增加提示
+            # 从combined_file路径中提取编号   
+            folder_name = os.path.basename(os.path.dirname(os.path.dirname(combined_file)))  # 获取M_1这样的文件夹名
+            number = folder_name.split('_')[1]  # 提取编号1
             if method_name in ["SFC_Gray", "SFC_Hilbert", "SFC_Zorder"]:
-                method_instance.process_file(input_file=combined_file, output_file=os.path.join(output_folders[method_name], "M", f"{malicious_count + 1}.png"))
+                method_instance.process_file(input_file=combined_file, output_file=os.path.join(output_folders[method_name], "M", f"{number}.png"))
             else:
                 method_instance.process_file(combined_file)
-                method_instance.save_image(os.path.join(output_folders[method_name], "M", f"{malicious_count + 1}.png"))
+                method_instance.save_image(os.path.join(output_folders[method_name], "M", f"{number}.png"))
 
         log_message(f"{method_name} 方法处理完成！")
 
