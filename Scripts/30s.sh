@@ -99,9 +99,6 @@ get_data() {
         
         # 将无法创建检查点的exec_file保存到failure.txt文件中
         echo "${exec_file}" >> "$LOG_PATH/failure_10s.txt"
-        
-        # 无法创建检查点时，跳转到下一个文件
-        break
     fi
     
     # 保存快照文件
