@@ -23,10 +23,10 @@
 以10s为例：
 1. 运行`Scripts/10s.sh`，输出路径为：`/home/ubuntu20/Workspace/Datasets/Multimodal/10s/8Events/B_1.txt && M_1.txt` && `/home/ubuntu20/Workspace/Datasets/Multimodal/10s/Snapshots/B/B_1/ck1`；
 2. 运行`Preprocess/10s.py`，输入路径为：`input_dirs = "Datasets/Original/10s/8Events"` && `"Datasets/Original/10s/Snapshots"`，输出路径为`"Dataset/Processed/10s/10s_100ms.csv"` && `"Datasets/Processed/10s/SFC/Gray/B{1..500}.png"`。
-3. 运行`main.py`，输入路径为：`"Dataset/Processed/10s/10s_100ms.csv"` && `"Datasets/Processed/10s/SFC/Gray/B{1..500}.png"`，输出路径为`"Dataset/Results/10s/"`。
+3. 运行`main.py`，输入路径为：`"Dataset/Processed/10s/10s_100ms.csv"` && `"Datasets/Processed/10s/SFC/Gray/B{1..500}.png"`，输出路径为`"Results/10s/"`。
 
 ### 2.3 数据对齐
-在步骤2中，每一步都要进行数据对齐，以确保csv文件和图像的顺序一致。
+在步骤2.2中，每一步都要进行数据对齐，以确保csv文件和图像的顺序一致。
 1. `Scripts/10s.sh`中，每运行一个良性程序或恶意程序，经过10s后，先收集时序hpc数值数据，再收集快照二进制文件，注意输出路径，便于预处理。
 2. `Preprocess/10s.py`中，`hpc()`函数中，利用第一章预处理代码，最后的csv文件，保存成`sample_id` `timestamp_id` `label` `features_value`列，便于后续处理。`b2image()`函数中，利用第二章预处理代码，将`combined.img`转换为`sfc`图像，并保存到`Datasets/Processed/10s/SFC/Gray/B{1..500}.png`。
 3. `main.py`中，`load_aligned_data()`将数值数据和图像数据进行对齐，送入到多模态模型中。
