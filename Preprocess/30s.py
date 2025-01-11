@@ -419,5 +419,15 @@ def b2image():
     process_img(input_base_folder, output_base_folder)
 
 if __name__ == "__main__":
+    # 确保日志目录存在
+    log_dir = os.path.dirname(log_file_path)
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # 初始化日志文件
+    with open(log_file_path, 'w', encoding='utf-8') as log_file:
+        log_file.write("日志文件初始化...\n")
+    
+    # 开始处理
+    log_message("程序启动...")
     hpc()  # .txt hpc时序数据转换为csv
     b2image() # .img 二进制数据转换为sfc图像
