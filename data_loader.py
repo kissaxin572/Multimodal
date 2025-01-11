@@ -26,6 +26,7 @@ def load_aligned_data(image_dir, sequence_file, img_size, batch_size):
         for img_file in os.listdir(image_path):  # 遍历图像文件夹中的每个文件
             # 提取样本ID（图像文件名作为样本ID）
             sample_id = f"{label}_{os.path.splitext(img_file)[0]}.txt"
+            
             # 查找与当前图像对应的时序数据行
             sequence_rows = sequence_data[sequence_data["sample_id"] == sample_id]
 
