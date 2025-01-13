@@ -8,14 +8,14 @@ import os
 if __name__ == "__main__":
     sample_time = "10s"
 
-    image_dir = f"Dataset/Processed/{sample_time}/SFC/Gray"
+    image_dir = f"Datasets/Processed/{sample_time}/SFC/Gray"
     # 检查并创建图像目录
     if not os.path.exists(image_dir):
         print(f"创建图像目录: {image_dir}")
         os.makedirs(image_dir, exist_ok=True)
 
     sample_interval = "100ms" if sample_time == "10s" else "200ms" if sample_time == "20s" else "300ms"
-    time_series_file = f"Dataset/Processed/{sample_time}/{sample_time}_{sample_interval}.csv"
+    time_series_file = f"Datasets/Processed/{sample_time}/{sample_time}_{sample_interval}.csv"
     # 检查时序数据文件是否存在
     if not os.path.exists(time_series_file):
         raise FileNotFoundError(f"时序数据文件不存在: {time_series_file}")
