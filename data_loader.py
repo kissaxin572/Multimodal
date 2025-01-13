@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, random_split, TensorDataset
 import pandas as pd
 from PIL import Image
 from torchvision import transforms
+import numpy as np
 
 # 定义加载并对齐图像与时序数据的函数
 def load_aligned_data(image_dir, sequence_file, img_size, batch_size):
@@ -35,11 +36,11 @@ def load_aligned_data(image_dir, sequence_file, img_size, batch_size):
                 # 使用真实图像替代随机图像
                 img = transform(Image.open(os.path.join(image_path, img_file)))  # 加载并转换图像
                 # 提取时序数据的特征部分
-                features = sequence_rows.iloc[:, 3:].values.astype(float)  # 提取特征列
+                features = sequence_rows.iloc[:, 3:].values.astype(np.float32)  # 确保特征是float32
                 # 设置标签值，良性为0，恶性为1
                 label_value = 0 if label == "B" else 1
                 # 将图像、时序数据和标签作为元组添加到对齐数据列表中
-                aligned_data.append((img, torch.tensor(features), label_value))
+                aligned_data.append((img, torch.tensor(features, dtype=torch.float32), label_value))  # 确保特征是float32
 
     # 划分数据集：训练集70%，验证集10%，测试集20%
     total_size = len(aligned_data)

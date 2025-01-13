@@ -35,7 +35,7 @@ def save_and_plot_metrics(metrics, result_dir):
 
     # 绘制并保存Metrics柱状图
     labels = ["Accuracy", "Precision", "Recall", "F1-score"]
-    values = [metrics[label.lower()] for label in labels]
+    values = [metrics[label.lower()] for label in ["accuracy", "precision", "recall", "f1"]]
     x = np.arange(len(labels))
 
     plt.figure(figsize=(10, 6))

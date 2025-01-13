@@ -28,6 +28,7 @@ class BiLSTMAttentionClassifier(nn.Module):
         self.fc = nn.Linear(hidden_size * 2, 128)
 
     def forward(self, x):
+        x = x.float()  # 确保输入是float类型
         # 获取LSTM的输出
         lstm_out, _ = self.lstm(x)
         # 计算注意力和上下文向量

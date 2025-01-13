@@ -36,7 +36,7 @@ class Trainer:
 
         # 重定向标准输出和标准错误流到日志系统
         sys.stdout = LoggerStreamHandler(self.logger, logging.INFO)
-        sys.stderr = LoggerStreamHandler(self.logger, logging.ERROR)
+        sys.stderr = LoggerStreamHandler(self.logger, logging.INFO)
 
     def train_model(self, model, train_loader, val_loader, criterion, optimizer, scheduler, device, sample_time, epochs=10):
         model.to(device)
