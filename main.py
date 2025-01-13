@@ -36,6 +36,8 @@ if __name__ == "__main__":
 
     # 创建Trainer实例
     log_path = f"Results/{sample_time}/train.log"
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)  # 创建必要的目录
+    
     trainer = Trainer(log_path)
 
     # 定义损失函数、优化器和学习率调度器
