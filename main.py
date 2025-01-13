@@ -6,7 +6,7 @@ import os
 import plot_utils
 
 if __name__ == "__main__":
-    sample_time = "20s"
+    sample_time = "30s"
     # 图像类型和路径映射字典
     image_type_to_path = {
         "Byteplot": f"Datasets/Processed/{sample_time}/Byteplot",
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         "20s": "200ms", 
         "30s": "300ms"
     }
-    
+
     results = {}
 
     for image_type, image_dir in image_type_to_path.items():
