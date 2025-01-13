@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet50
+from torchvision.models import resnet50, ResNet50_Weights
 
 # 定义注意力机制模块
 class Attention(nn.Module):
@@ -42,7 +42,7 @@ class MultimodalModel(nn.Module):
     def __init__(self, input_size, hidden_size):
         super(MultimodalModel, self).__init__()
         # ResNet50 模块
-        self.resnet50 = resnet50(pretrained=True)
+        self.resnet50 = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
         self.resnet50.fc = nn.Sequential(
             nn.Linear(self.resnet50.fc.in_features, 128),  # 增加一层全连接层，输出大小为128
             nn.ReLU()

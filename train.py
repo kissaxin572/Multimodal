@@ -24,21 +24,26 @@ class Trainer:
         # 设置日志记录到文件和屏幕
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
-        file_handler = logging.FileHandler(log_path, mode="w")
-        console_handler = logging.StreamHandler()
 
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
+        # 检查是否已有处理器，避免重复添加
+        if not self.logger.hasHandlers():
+            file_handler = logging.FileHandler(log_path, mode="w")
+            console_handler = logging.StreamHandler()
 
-        self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
+            formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+            file_handler.setFormatter(formatter)
+            console_handler.setFormatter(formatter)
 
-        # 重定向标准输出和标准错误流到日志系统
-        sys.stdout = LoggerStreamHandler(self.logger, logging.INFO)
-        sys.stderr = LoggerStreamHandler(self.logger, logging.INFO)
+            self.logger.addHandler(file_handler)
+            self.logger.addHandler(console_handler)
 
-    def train_model(self, model, train_loader, val_loader, criterion, optimizer, scheduler, device, sample_time, epochs=10):
+        # 避免重复重定向标准输出和标准错误
+        if not isinstance(sys.stdout, LoggerStreamHandler):
+            sys.stdout = LoggerStreamHandler(self.logger, logging.INFO)
+        if not isinstance(sys.stderr, LoggerStreamHandler):
+            sys.stderr = LoggerStreamHandler(self.logger, logging.INFO)
+
+    def train_model(self, model, train_loader, val_loader, criterion, optimizer, scheduler, device, path, epochs=10):
         model.to(device)
 
         # 记录模型信息
@@ -93,7 +98,7 @@ class Trainer:
 
         # 保存最佳模型
         if best_model_weights is not None:
-            best_model_path = f"Results/{sample_time}/best_model.pth"
+            best_model_path = f"Results/{path}/best_model.pth"
             torch.save(best_model_weights, best_model_path)
             self.logger.info(f"Best model weights saved as {best_model_path}")
 
@@ -134,8 +139,8 @@ class Trainer:
             "auc": auc_score
         }
 
-    def save_results(self, metrics, history, sample_time):
-        result_dir = f"Results/{sample_time}"
+    def save_results(self, metrics, history, path):
+        result_dir = f"Results/{path}"
         os.makedirs(result_dir, exist_ok=True)
 
         # 保存训练历史和绘制损失曲线

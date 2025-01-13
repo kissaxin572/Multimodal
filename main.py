@@ -1,55 +1,61 @@
-from data_loader import load_aligned_data  # 导入数据加载模块
-from models import MultimodalModel  # 导入模型模块
-from train import Trainer  # 导入训练模块
+from data_loader import load_aligned_data
+from models import MultimodalModel
+from train import Trainer
 import torch
 import os
+import plot_utils
 
-# 主程序入口
 if __name__ == "__main__":
     sample_time = "10s"
+    # 图像类型和路径映射字典
+    image_type_to_path = {
+        "Byteplot": f"Datasets/Processed/{sample_time}/Byteplot",
+        "Markov": f"Datasets/Processed/{sample_time}/Markov",
+        "Simhash": f"Datasets/Processed/{sample_time}/Simhash",
+        "SFC_Gray": f"Datasets/Processed/{sample_time}/SFC/Gray",
+        "SFC_Hilbert": f"Datasets/Processed/{sample_time}/SFC/Hilbert",
+        "SFC_Zorder": f"Datasets/Processed/{sample_time}/SFC/Zorder"
+    }
+    results = {}
 
-    image_dir = f"Datasets/Processed/{sample_time}/SFC/Gray"
-    # 检查并创建图像目录
-    if not os.path.exists(image_dir):
-        print(f"创建图像目录: {image_dir}")
-        os.makedirs(image_dir, exist_ok=True)
+    for image_type, image_dir in image_type_to_path.items():
+        print(f"Processing image type: {image_type}")
+        
+        # 检查图像目录
+        if not os.path.exists(image_dir):
+            print(f"Image directory not found: {image_dir}")
+            continue
+        
+        sample_interval = "100ms"
+        time_series_file = f"Datasets/Processed/{sample_time}/{sample_time}_{sample_interval}.csv"
+        
+        if not os.path.exists(time_series_file):
+            print(f"Time series file not found: {time_series_file}")
+            continue
+        
+        train_loader, val_loader, test_loader = load_aligned_data(image_dir, time_series_file, img_size=256, batch_size=32)
+        
+        # 初始化模型
+        model = MultimodalModel(input_size=8, hidden_size=64)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        log_path = f"Results/{sample_time}/{image_type}/train.log"
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        trainer = Trainer(log_path)
+        
+        criterion = torch.nn.BCEWithLogitsLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+        
+        # 训练模型
+        history = trainer.train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, device, f"{sample_time}/{image_type}")
+        
+        # 评估模型
+        metrics = trainer.evaluate_model(model, test_loader, device)
+        
+        # 保存结果
+        trainer.save_results(metrics, history, f"{sample_time}/{image_type}")
+        results[image_type] = {"metrics": metrics, "history": history}
 
-    sample_interval = "100ms" if sample_time == "10s" else "200ms" if sample_time == "20s" else "300ms"
-    time_series_file = f"Datasets/Processed/{sample_time}/{sample_time}_{sample_interval}.csv"
-    # 检查时序数据文件是否存在
-    if not os.path.exists(time_series_file):
-        raise FileNotFoundError(f"时序数据文件不存在: {time_series_file}")
-
-    img_size = 256  # 图像尺寸
-    batch_size = 32  # 批次大小
-
-    # 加载对齐的数据
-    train_loader, val_loader, test_loader = load_aligned_data(image_dir, time_series_file, img_size, batch_size)
-
-    # 创建多模态模型
-    hidden_size = 64  # LSTM 隐藏层大小
-    input_size = 8  # 时序数据的特征维度（根据你的数据调整）
-    model = MultimodalModel(input_size, hidden_size)
-
-    # 设置设备（使用 GPU 或 CPU）
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # 创建Trainer实例
-    log_path = f"Results/{sample_time}/train.log"
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)  # 创建必要的目录
-    
-    trainer = Trainer(log_path)
-
-    # 定义损失函数、优化器和学习率调度器
-    criterion = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
-
-    # 训练模型
-    history = trainer.train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, device, sample_time)
-
-    # 评估模型
-    metrics = trainer.evaluate_model(model, test_loader, device)
-
-    # 保存结果
-    trainer.save_results(metrics, history, sample_time)
+    # 对比绘图
+    plot_utils.compare_results(results, f"Results/{sample_time}/comparison")
