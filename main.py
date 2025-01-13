@@ -6,7 +6,7 @@ import os
 import plot_utils
 
 if __name__ == "__main__":
-    sample_time = "10s"
+    sample_time = "20s"
     # 图像类型和路径映射字典
     image_type_to_path = {
         "Byteplot": f"Datasets/Processed/{sample_time}/Byteplot",
@@ -16,6 +16,14 @@ if __name__ == "__main__":
         "SFC_Hilbert": f"Datasets/Processed/{sample_time}/SFC/Hilbert",
         "SFC_Zorder": f"Datasets/Processed/{sample_time}/SFC/Zorder"
     }
+
+    # 根据采样时间设置对应的采样间隔
+    sample_interval_map = {
+        "10s": "100ms",
+        "20s": "200ms", 
+        "30s": "300ms"
+    }
+    
     results = {}
 
     for image_type, image_dir in image_type_to_path.items():
@@ -26,7 +34,7 @@ if __name__ == "__main__":
             print(f"Image directory not found: {image_dir}")
             continue
         
-        sample_interval = "100ms"
+        sample_interval = sample_interval_map[sample_time]
         time_series_file = f"Datasets/Processed/{sample_time}/{sample_time}_{sample_interval}.csv"
         
         if not os.path.exists(time_series_file):
